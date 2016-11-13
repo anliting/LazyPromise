@@ -1,10 +1,10 @@
-class LazyPromise extends Promise{
+(class LazyPromise extends Promise{
     constructor(exec){
         let onceThened
         super((rs,rj)=>
-            exec(rs,rj,onceThened_=>{
+            exec(rs,rj,onceThened_=>
                 onceThened=onceThened_
-            })
+            )
         )
         this._onceThened=onceThened
     }
@@ -16,10 +16,10 @@ class LazyPromise extends Promise{
         return super.then.apply(this,arguments)
     }
     lazyThen(){
-        return new this.constructor[Symbol.species]((rs,rj,onceThened)=>{
-            onceThened(()=>{
-                this.then.apply(this,arguments).then(rs)
-            })
-        })
+        return new this.constructor[Symbol.species]((rs,rj,onceThened)=>
+            onceThened(()=>
+                rs(this.then.apply(this,arguments))
+            )
+        )
     }
-}
+})
